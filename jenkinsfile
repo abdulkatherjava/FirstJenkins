@@ -22,7 +22,7 @@ node {
         stage('Start Application with JaCoCo Agent') {
             echo 'Starting Spring Boot application with JaCoCo agent...'
             bat """
-                start java -javaagent:${jacocoAgentJar}=address=*,port=${port},destfile=${jacocoExecFile},output=tcpserver -jar ${appJar}
+                java -javaagent:${jacocoAgentJar}=address=*,port=${port},destfile=${jacocoExecFile},output=tcpserver -jar ${appJar}
             """
             echo 'Waiting for application to start...'
             sleep(20) // Wait longer or use a health-check mechanism
