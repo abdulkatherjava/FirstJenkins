@@ -1,42 +1,44 @@
-pipeline {
-    agent any
+node {
+    // Define variables
+    def jacocoAgentJar = "src\\main\\resources\\jacocoagent.jar"
+    def jacocoCliJar = "src\\main\\resources\\jacococli.jar"
+    def jacocoExecFile = "target\\jacoco-it.exec"
+    def jacocoReportDir = "target\\jacoco-report"
+    def appJar = "target\\maven-jacoco-dump-demo-0.0.1-SNAPSHOT.jar"
+//     def karateTestsDir = "path\\to\\karate\\tests" // Update with your actual path
+    def port = "6300"
 
-    stages {
-        stage('Checkout') {
-            steps {
-                // Clone the repository
-                checkout scm
-            }
+    try {
+        stage('Start Application with JaCoCo Agent') {
+            echo 'Starting Spring Boot application with JaCoCo agent...'
+            bat """
+                start java -javaagent:${jacocoAgentJar}=address=*,port=${port},destfile=${jacocoExecFile},output=tcpserver ^
+                -jar ${appJar}
+            """
+            echo 'Waiting for application to start...'
+            sleep(15) // Wait for the app to start
         }
-        stage('Build') {
-            steps {
-                // Clean and build the project using Maven
-                bat 'mvn clean install'
-            }
+
+        stage('Dump JaCoCo Execution Data') {
+            echo 'Dumping JaCoCo execution data...'
+            bat """
+                java -jar ${jacocoCliJar} dump --address localhost --port ${port} --destfile ${jacocoExecFile}
+            """
         }
-        stage('Start Application with Java Agent') {
-            steps {
-                // Start the application with JaCoCo Java agent
-                bat 'java -javaagent:src\\main\\resources\\jacocoagent.jar=address=*,port=6300,destfile=jacoco-it.exec,output=tcpserver -jar target\\maven-jacoco-dump-demo-0.0.1-SNAPSHOT.jar'
-            }
+
+        stage('Generate JaCoCo Report') {
+            echo 'Generating JaCoCo report...'
+            bat """
+                java -jar ${jacocoCliJar} report ${jacocoExecFile} ^
+                --classfiles target\\classes\\com ^
+                --sourcefiles src\\main\\java\\ ^
+                --html ${jacocoReportDir}
+            """
         }
-        stage('Execute Karate Test Suites') {
-            steps {
-                // Add your command to execute Karate tests (adjust this as needed)
-                bat 'mvn test -Dtest=KarateTest' // Example: Modify based on your setup
-            }
-        }
-        stage('Dump JaCoCo Coverage Data') {
-            steps {
-                // Dump JaCoCo coverage data from the running application
-                bat 'java -jar src\\main\\resources\\jacococli.jar dump --address localhost --port 6300 --destfile target\\jacoco-it.exec'
-            }
-        }
-        stage('Generate JaCoCo Coverage Report') {
-            steps {
-                // Generate JaCoCo report
-                bat 'java -jar src\\main\\resources\\jacococli.jar report target\\jacoco-it.exec --classfiles target\\classes\\com --sourcefiles src\\main\\java\\ --html target\\jacoco-report'
-            }
+    } finally {
+        stage('Cleanup') {
+            echo 'Cleaning up application process...'
+            bat "taskkill /F /IM java.exe /T || exit 0"
         }
     }
 }
