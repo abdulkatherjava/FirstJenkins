@@ -21,8 +21,7 @@ try {
         stage('Start Application with JaCoCo Agent') {
             echo 'Starting Spring Boot application with JaCoCo agent...'
             bat """
-                start java -javaagent:${jacocoAgentJar}=address=*,port=${port},destfile=${jacocoExecFile},output=tcpserver ^
-                -jar ${appJar}
+                start java -javaagent:src/main/resources/jacocoagent.jar=address=*,port=6300,destfile=jacoco-it.exec,output=tcpserver -jar target/maven-jacoco-dump-demo-0.0.1-SNAPSHOT.jar
             """
             echo 'Waiting for application to start...'
             sleep(15) // Wait for the app to start
