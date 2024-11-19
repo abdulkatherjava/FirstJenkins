@@ -11,14 +11,14 @@ pipeline {
         stage('Build') {
             steps {
                 // Build the project using Maven (modify as needed for your setup)
-//                 sh 'mvn clean package'
+                   bat 'mvn clean package'
                    bat 'echo "mvn clean package..."'
             }
         }
         stage('Test') {
             steps {
                 // Run tests (modify if your tests are external)
-//                 sh 'mvn test'
+                   bat 'mvn test'
                    bat 'echo "mvn test..."'
 
             }
