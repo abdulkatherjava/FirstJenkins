@@ -8,6 +8,12 @@ node {
     def port = "6300"
 
     try {
+        stage('Checkout') {
+            checkout scm
+            // Or specify the repository explicitly
+            git url: 'https://github.com/abdulkatherjava/FirstJenkins.git', branch: 'master'
+        }
+
         stage('Build') {
             echo 'Building the project...'
             bat 'mvn clean package'
