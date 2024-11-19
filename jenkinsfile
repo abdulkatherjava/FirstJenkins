@@ -9,7 +9,7 @@ node {
     def port = "6300"
 
 
-stages{
+try {
         stage('Build') {
                 steps {
                     // Build the project using Maven (modify as needed for your setup)
@@ -44,5 +44,12 @@ stages{
                 --html ${jacocoReportDir}
             """
         }
-}
+}catch (err) {
+         // Handle errors
+         echo "Pipeline failed with error: ${err}"
+         currentBuild.result = 'FAILURE'
+     } finally {
+         // Clean up or post actions
+         echo 'Pipeline finished.'
+     }
 }
