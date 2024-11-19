@@ -47,7 +47,6 @@ node {
     } finally {
         stage('Cleanup') {
             echo 'Cleaning up application process...'
-            bat "taskkill /F /IM java.exe /T || exit 0"
         }
     }
 }
