@@ -9,7 +9,7 @@ node {
     def port = "6300"
 
 
-
+stages{
         stage('Build') {
                 steps {
                     // Build the project using Maven (modify as needed for your setup)
@@ -44,5 +44,5 @@ node {
                 --html ${jacocoReportDir}
             """
         }
-
+}
 }
