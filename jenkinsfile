@@ -20,12 +20,12 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        stage('Code Coverage') {
-            steps {
-                // Add code coverage commands if needed
-                sh 'mvn jacoco:report'
-            }
-        }
+//         stage('Code Coverage') {
+//             steps {
+//                 // Add code coverage commands if needed
+//                 sh 'mvn jacoco:report'
+//             }
+//         }
         stage('Deploy') {
             steps {
                 // Deploy the application (modify based on your environment)
@@ -34,10 +34,10 @@ pipeline {
         }
     }
 
-    post {
+  /*   post {
         always {
-            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
-            junit '**/target/surefire-reports/*.xml'
+            archiveArtifacts artifacts: '**//* target *//*.jar', allowEmptyArchive: true
+            junit '**//* target/surefire-reports *//*.xml'
         }
-    }
+    } */
 }
