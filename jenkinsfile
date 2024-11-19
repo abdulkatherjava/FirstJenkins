@@ -23,12 +23,12 @@ pipeline {
 
             }
         }
-//         stage('Code Coverage') {
-//             steps {
-//                 // Add code coverage commands if needed
-//                 sh 'mvn jacoco:report'
-//             }
-//         }
+        stage('Code Coverage') {
+            steps {
+                // Add code coverage commands if needed
+                bat 'mvn jacoco:report'
+            }
+        }
         stage('Deploy') {
             steps {
                 // Deploy the application (modify based on your environment)
