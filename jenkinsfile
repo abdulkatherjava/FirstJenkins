@@ -8,7 +8,7 @@ node {
 //     def karateTestsDir = "path\\to\\karate\\tests" // Update with your actual path
     def port = "6300"
 
-    try {
+
 
         stage('Build') {
                 steps {
@@ -44,9 +44,5 @@ node {
                 --html ${jacocoReportDir}
             """
         }
-    } finally {
-        stage('Cleanup') {
-            echo 'Cleaning up application process...'
-        }
-    }
+
 }
