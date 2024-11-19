@@ -10,37 +10,33 @@ pipeline {
         }
         stage('Build') {
             steps {
-                // Build the project using Maven (modify as needed for your setup)
-                   bat 'mvn clean package'
-                   bat 'echo "mvn clean package..."'
+                // Clean and build the project using Maven
+                bat 'mvn clean install'
             }
         }
-        stage('Test') {
+        stage('Start Application with Java Agent') {
             steps {
-                // Run tests (modify if your tests are external)
-                   bat 'mvn test'
-                   bat 'echo "mvn test..."'
-
+                // Start the application with JaCoCo Java agent
+                bat 'java -javaagent:src\\main\\resources\\jacocoagent.jar=address=*,port=6300,destfile=jacoco-it.exec,output=tcpserver -jar target\\maven-jacoco-dump-demo-0.0.1-SNAPSHOT.jar'
             }
         }
-        stage('Code Coverage') {
+        stage('Execute Karate Test Suites') {
             steps {
-                // Add code coverage commands if needed
-                bat 'mvn jacoco:report'
+                // Add your command to execute Karate tests (adjust this as needed)
+                bat 'mvn test -Dtest=KarateTest' // Example: Modify based on your setup
             }
         }
-        stage('Deploy') {
+        stage('Dump JaCoCo Coverage Data') {
             steps {
-                // Deploy the application (modify based on your environment)
-                bat 'echo "Deploying application..."'
+                // Dump JaCoCo coverage data from the running application
+                bat 'java -jar src\\main\\resources\\jacococli.jar dump --address localhost --port 6300 --destfile target\\jacoco-it.exec'
+            }
+        }
+        stage('Generate JaCoCo Coverage Report') {
+            steps {
+                // Generate JaCoCo report
+                bat 'java -jar src\\main\\resources\\jacococli.jar report target\\jacoco-it.exec --classfiles target\\classes\\com --sourcefiles src\\main\\java\\ --html target\\jacoco-report'
             }
         }
     }
-
-  /*   post {
-        always {
-            archiveArtifacts artifacts: '**//* target *//*.jar', allowEmptyArchive: true
-            junit '**//* target/surefire-reports *//*.xml'
-        }
-    } */
 }
