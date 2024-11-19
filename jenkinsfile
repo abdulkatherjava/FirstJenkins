@@ -15,10 +15,10 @@ node {
             git url: 'https://github.com/abdulkatherjava/FirstJenkins.git', branch: 'master'
         }
 
-         stage('Check Java Version') {
-           echo 'Verifying Java installation...'
-           bat 'java -version'
-        }
+//          stage('Check Java Version') {
+//            echo 'Verifying Java installation...'
+//            bat 'java -version'
+//         }
 
         stage('Build') {
             echo 'Building the project...'
