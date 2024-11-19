@@ -5,26 +5,21 @@ node {
     def jacocoExecFile = "target\\jacoco-it.exec"
     def jacocoReportDir = "target\\jacoco-report"
     def appJar = "target\\maven-jacoco-dump-demo-0.0.1-SNAPSHOT.jar"
-//     def karateTestsDir = "path\\to\\karate\\tests" // Update with your actual path
     def port = "6300"
 
-
-try {
+    try {
         stage('Build') {
-                step {
-                    // Build the project using Maven (modify as needed for your setup)
-                       bat 'mvn clean package'
-                       bat 'echo "mvn clean package..."'
-                }
+            echo 'Building the project...'
+            bat 'mvn clean package'
         }
 
         stage('Start Application with JaCoCo Agent') {
             echo 'Starting Spring Boot application with JaCoCo agent...'
             bat """
-                start java -javaagent:src/main/resources/jacocoagent.jar=address=*,port=6300,destfile=jacoco-it.exec,output=tcpserver -jar target/maven-jacoco-dump-demo-0.0.1-SNAPSHOT.jar
+                start java -javaagent:${jacocoAgentJar}=address=*,port=${port},destfile=${jacocoExecFile},output=tcpserver -jar ${appJar}
             """
             echo 'Waiting for application to start...'
-            sleep(15) // Wait for the app to start
+            sleep(20) // Wait longer or use a health-check mechanism
         }
 
         stage('Dump JaCoCo Execution Data') {
@@ -38,17 +33,15 @@ try {
             echo 'Generating JaCoCo report...'
             bat """
                 java -jar ${jacocoCliJar} report ${jacocoExecFile} ^
-                --classfiles target\\classes\\com ^
-                --sourcefiles src\\main\\java\\ ^
+                --classfiles target\\classes ^
+                --sourcefiles src\\main\\java ^
                 --html ${jacocoReportDir}
             """
         }
-}catch (err) {
-         // Handle errors
-         echo "Pipeline failed with error: ${err}"
-         currentBuild.result = 'FAILURE'
-     } finally {
-         // Clean up or post actions
-         echo 'Pipeline finished.'
-     }
+    } catch (err) {
+        echo "Pipeline failed with error: ${err}"
+        throw err // Ensure the build fails
+    } finally {
+        echo 'Pipeline finished.'
+    }
 }
