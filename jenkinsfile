@@ -12,14 +12,14 @@ pipeline {
             steps {
                 // Build the project using Maven (modify as needed for your setup)
 //                 sh 'mvn clean package'
-                   sh 'echo "mvn clean package..."'
+                   bat 'echo "mvn clean package..."'
             }
         }
         stage('Test') {
             steps {
                 // Run tests (modify if your tests are external)
 //                 sh 'mvn test'
-                   sh 'echo "mvn test..."'
+                   bat 'echo "mvn test..."'
 
             }
         }
@@ -32,7 +32,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 // Deploy the application (modify based on your environment)
-                sh 'echo "Deploying application..."'
+                bat 'echo "Deploying application..."'
             }
         }
     }
