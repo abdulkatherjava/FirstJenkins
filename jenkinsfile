@@ -15,10 +15,10 @@ node {
             git url: 'https://github.com/abdulkatherjava/FirstJenkins.git', branch: 'master'
         }
 
-         stage('Check Java Version') {
-           echo 'Verifying Java installation...'
-           bat 'java -version'
-        }
+//          stage('Check Java Version') {
+//            echo 'Verifying Java installation...'
+//            bat 'java -version'
+//         }
 
         stage('Build') {
             echo 'Building the project...'
@@ -29,7 +29,7 @@ node {
             echo 'Starting Spring Boot application with JaCoCo agent...'
             // Start the application and keep track of the process
             appProcess = bat(returnStdout: true, script: """
-                java -javaagent:${jacocoAgentJar}=address=*,port=${port},destfile=${jacocoExecFile},output=tcpserver -jar ${appJar}
+                start java -javaagent:${jacocoAgentJar}=address=*,port=${port},destfile=${jacocoExecFile},output=tcpserver -jar ${appJar}
             """).trim()
             echo 'Waiting for application to start...'
             sleep(20) // Ensure the application has enough time to initialize
