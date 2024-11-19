@@ -9,6 +9,15 @@ node {
     def port = "6300"
 
     try {
+
+        stage('Build') {
+                steps {
+                    // Build the project using Maven (modify as needed for your setup)
+                       bat 'mvn clean package'
+                       bat 'echo "mvn clean package..."'
+                }
+        }
+
         stage('Start Application with JaCoCo Agent') {
             echo 'Starting Spring Boot application with JaCoCo agent...'
             bat """
