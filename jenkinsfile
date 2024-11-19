@@ -6,11 +6,11 @@ node {
     def jacocoReportDir = "target\\jacoco-report"
     def appJar = "target\\maven-jacoco-dump-demo-0.0.1-SNAPSHOT.jar"
     def port = "6300"
+    def appProcess
 
     try {
         stage('Checkout') {
             checkout scm
-            // Or specify the repository explicitly
             git url: 'https://github.com/abdulkatherjava/FirstJenkins.git', branch: 'master'
         }
 
@@ -21,11 +21,12 @@ node {
 
         stage('Start Application with JaCoCo Agent') {
             echo 'Starting Spring Boot application with JaCoCo agent...'
-            bat """
-                start java -javaagent:${jacocoAgentJar}=address=*,port=${port},destfile=${jacocoExecFile},output=tcpserver -jar ${appJar}
-            """
+            // Start the application and keep track of the process
+            appProcess = bat(returnStdout: true, script: """
+                java -javaagent:${jacocoAgentJar}=address=*,port=${port},destfile=${jacocoExecFile},output=tcpserver -jar ${appJar}
+            """).trim()
             echo 'Waiting for application to start...'
-            sleep(20) // Wait longer or use a health-check mechanism
+            sleep(20) // Ensure the application has enough time to initialize
         }
 
         stage('Dump JaCoCo Execution Data') {
@@ -46,8 +47,13 @@ node {
         }
     } catch (err) {
         echo "Pipeline failed with error: ${err}"
-        throw err // Ensure the build fails
+        throw err
     } finally {
+        // Terminate the application if it is still running
+        if (appProcess) {
+            echo 'Stopping the Spring Boot application...'
+            bat "taskkill /PID ${appProcess} /F"
+        }
         echo 'Pipeline finished.'
     }
 }
