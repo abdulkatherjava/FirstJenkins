@@ -8,11 +8,11 @@ node {
     def port = "6300"
     def appProcess
     def javaPath = "C:\\Program Files\\Java\\jdk-17\\bin\\java"
-
-    try {
     tools{
         jdk "jdk17"
     }
+    try {
+
         stage('Checkout') {
             checkout scm
             git url: 'https://github.com/abdulkatherjava/FirstJenkins.git', branch: 'master'
