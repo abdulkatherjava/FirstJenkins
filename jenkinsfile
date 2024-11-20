@@ -10,6 +10,9 @@ node {
     def javaPath = "C:\\Program Files\\Java\\jdk-17\\bin\\java"
 
     try {
+    tools{
+        jdk "jdk17"
+    }
         stage('Checkout') {
             checkout scm
             git url: 'https://github.com/abdulkatherjava/FirstJenkins.git', branch: 'master'
